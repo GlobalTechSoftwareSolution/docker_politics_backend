@@ -43,3 +43,4 @@ See `.env` file for configuration:
 3. Start server: `python manage.py runserver`
 4. Access API at: `http://127.0.0.1:8000`# politics_backend
 # politics_backend
+# politics_backend

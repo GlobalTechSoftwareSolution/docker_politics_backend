@@ -79,13 +79,13 @@ WSGI_APPLICATION = 'politics_backend.wsgi.application'
 
 
 # Database
-# PostgreSQL Configuration
+# PostgreSQL Configuration with Environment Variables
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'politics_backend',
-        'USER': 'manibharadwaj',  # Your system username
-        'PASSWORD': '',  # Empty password for local development
+        'USER': 'manibharadwaj',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
