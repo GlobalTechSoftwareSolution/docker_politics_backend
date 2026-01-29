@@ -252,8 +252,8 @@ def get_pending_info(request):
 def get_active_info(request):
     """Get all active/approved information (Available to all approved users)"""
     # For regular users, just require email and password
-    email = request.data.get('email')
-    password = request.data.get('password')
+    email = request.headers.get('X-User-Email')
+    password = request.headers.get('X-User-Password')
     
     if not email or not password:
         return Response({'error': 'Email and password required'}, status=status.HTTP_400_BAD_REQUEST)
