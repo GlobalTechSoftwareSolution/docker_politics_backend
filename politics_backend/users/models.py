@@ -50,13 +50,12 @@ class User(AbstractUser):
         """Approve the user and set approval date"""
         self.is_approved = True
         self.approval_date = timezone.now()
-        if approved_by and approved_by.is_superuser:
-            self.is_user = True
+        # Only superusers have admin privileges - regular approved users don't get is_user=True
         self.save()
     
     def can_approve_users(self):
-        """Check if user can approve other users (superuser or user)"""
-        return self.is_superuser or self.is_user
+        """Check if user can approve other users (superuser only)"""
+        return self.is_superuser
 
 
 class PendingInfo(models.Model):
