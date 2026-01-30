@@ -1,0 +1,25 @@
+databases:
+  - name: politics-backend-db
+    databaseName: politics_backend
+    user: manibharadwaj
+
+services:
+  - type: web
+    name: politics-backend
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r politics_backend/requirements.txt"
+    startCommand: "python politics_backend/manage.py migrate && gunicorn politics_backend.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: politics-backend-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: CORS_ALLOW_ALL_ORIGINS
+        value: "True"
