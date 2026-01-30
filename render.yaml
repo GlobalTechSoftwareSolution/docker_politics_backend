@@ -9,7 +9,7 @@ services:
     runtime: python
     plan: free
     buildCommand: "pip install -r politics_backend/requirements.txt"
-    startCommand: "python politics_backend/manage.py migrate && gunicorn politics_backend.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "bash start.sh"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
