@@ -38,4 +38,4 @@ USER appuser
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "politics_backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "politics_backend.wsgi:application", "--bind", "0.0.0.0:$PORT", "--workers", "3"]
