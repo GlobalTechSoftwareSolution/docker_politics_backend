@@ -63,7 +63,10 @@ class PendingInfo(models.Model):
     heading = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='pending_info/', blank=True, null=True)
-    submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pending_submissions')
+    # Denormalized user fields to avoid joins
+    submitted_by_id = models.IntegerField(null=True, blank=True)
+    submitted_by_name = models.CharField(max_length=255, blank=True)
+    submitted_by_email = models.EmailField(blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
@@ -79,14 +82,18 @@ class PendingInfo(models.Model):
         if not approved_by.can_approve_users():
             raise PermissionError("User does not have permission to approve information")
         
-        # Create ActiveInfo record
+        # Create ActiveInfo record with denormalized data
         ActiveInfo.objects.create(
             heading=self.heading,
             description=self.description,
             image=self.image,
-            approved_by=approved_by,
+            approved_by_id=approved_by.id,
+            approved_by_name=approved_by.fullname,
+            approved_by_email=approved_by.email,
             approved_at=timezone.now(),
-            submitted_by=self.submitted_by
+            submitted_by_id=self.submitted_by_id,
+            submitted_by_name=self.submitted_by_name,
+            submitted_by_email=self.submitted_by_email
         )
         
         # Update status
@@ -107,8 +114,13 @@ class ActiveInfo(models.Model):
     heading = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='active_info/', blank=True, null=True)
-    submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_submissions')
-    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_info')
+    # Denormalized user fields to avoid joins
+    submitted_by_id = models.IntegerField(null=True, blank=True)
+    submitted_by_name = models.CharField(max_length=255, blank=True)
+    submitted_by_email = models.EmailField(blank=True)
+    approved_by_id = models.IntegerField(null=True, blank=True)
+    approved_by_name = models.CharField(max_length=255, blank=True)
+    approved_by_email = models.EmailField(blank=True)
     approved_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     

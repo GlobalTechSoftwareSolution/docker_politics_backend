@@ -190,13 +190,17 @@ def submit_info(request):
     if serializer.is_valid():
         # Check if user is superuser or admin - if so, approve directly
         if user.can_approve_users():
-            # Superuser/admin: Create ActiveInfo directly
+            # Superuser/admin: Create ActiveInfo directly with denormalized data
             active_info = ActiveInfo.objects.create(
                 heading=serializer.validated_data['heading'],
                 description=serializer.validated_data['description'],
                 image=serializer.validated_data.get('image'),
-                submitted_by=user,
-                approved_by=user,
+                submitted_by_id=user.id,
+                submitted_by_name=user.fullname,
+                submitted_by_email=user.email,
+                approved_by_id=user.id,
+                approved_by_name=user.fullname,
+                approved_by_email=user.email,
                 approved_at=timezone.now()
             )
             return Response({
@@ -204,8 +208,16 @@ def submit_info(request):
                 'active_info': ActiveInfoSerializer(active_info).data
             }, status=status.HTTP_201_CREATED)
         else:
-            # Regular user: Create PendingInfo
-            pending_info = serializer.save(submitted_by=user)
+            # Regular user: Create PendingInfo with denormalized data
+            pending_info = PendingInfo.objects.create(
+                heading=serializer.validated_data['heading'],
+                description=serializer.validated_data['description'],
+                image=serializer.validated_data.get('image'),
+                submitted_by_id=user.id,
+                submitted_by_name=user.fullname,
+                submitted_by_email=user.email,
+                status='pending'
+            )
             return Response({
                 'message': 'Information submitted successfully for approval',
                 'pending_info': PendingInfoSerializer(pending_info).data
@@ -320,11 +332,11 @@ def get_my_submissions(request):
         return Response({'error': 'Account not approved yet'}, status=status.HTTP_403_FORBIDDEN)
     
     # Get pending submissions
-    pending_submissions = PendingInfo.objects.filter(submitted_by=user).order_by('-submitted_at')
+    pending_submissions = PendingInfo.objects.filter(submitted_by_id=user.id).order_by('-submitted_at')
     pending_serializer = PendingInfoSerializer(pending_submissions, many=True)
     
     # Get approved submissions
-    approved_submissions = ActiveInfo.objects.filter(submitted_by=user).order_by('-approved_at')
+    approved_submissions = ActiveInfo.objects.filter(submitted_by_id=user.id).order_by('-approved_at')
     approved_serializer = ActiveInfoSerializer(approved_submissions, many=True)
     
     return Response({

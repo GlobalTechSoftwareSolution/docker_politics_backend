@@ -28,6 +28,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
+class LightUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'fullname']
+        read_only_fields = ['id', 'email', 'fullname']
+
+
 class UserApprovalSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -45,10 +52,7 @@ class PendingInfoSerializer(serializers.ModelSerializer):
 
 
 class ActiveInfoSerializer(serializers.ModelSerializer):
-    submitted_by = UserSerializer(read_only=True)
-    approved_by = UserSerializer(read_only=True)
-    
     class Meta:
         model = ActiveInfo
-        fields = ['id', 'heading', 'description', 'image', 'submitted_by', 'approved_by', 'approved_at', 'created_at']
-        read_only_fields = ['id', 'submitted_by', 'approved_by', 'approved_at', 'created_at']
+        fields = ['id', 'heading', 'description', 'image', 'submitted_by_id', 'submitted_by_name', 'submitted_by_email', 'approved_by_id', 'approved_by_name', 'approved_by_email', 'approved_at', 'created_at']
+        read_only_fields = ['id', 'submitted_by_id', 'submitted_by_name', 'submitted_by_email', 'approved_by_id', 'approved_by_name', 'approved_by_email', 'approved_at', 'created_at']
