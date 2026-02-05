@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8003:8003"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://neondb_owner:npg_gYkWjL83AUhb@ep-weathered-feather-ah46b9c8.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require
+      - SECRET_KEY=django-insecure-sh4ggvb1i2x$n5cyzfj7#sndw%8hfd(()e%i)i!&x%7gezm3j6
+    volumes:
+      - .:/app
+    working_dir: /app/politics_backend
+    command: sh -c "python manage.py migrate --settings=politics_backend.local_settings && gunicorn --bind 0.0.0.0:8003 politics_backend.wsgi:application"

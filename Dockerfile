@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-WORKDIR /app/politics_backend
+WORKDIR /app
 
 # Install system dependencies for testing
 RUN apt-get update && apt-get install -y \
@@ -18,6 +18,7 @@ COPY . /app
 
 
 
-EXPOSE 8000
+EXPOSE 8003
 
-CMD ["sh", "-c", "python manage.py migrate --settings=politics_backend.local_settings && gunicorn --bind 0.0.0.0:8000 politics_backend.wsgi:application"]
+WORKDIR /app/politics_backend
+CMD ["sh", "-c", "python manage.py migrate --settings=politics_backend.local_settings && gunicorn --bind 0.0.0.0:8003 politics_backend.wsgi:application"]

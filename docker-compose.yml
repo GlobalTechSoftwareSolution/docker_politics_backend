@@ -31,7 +31,8 @@ services:
       - SECRET_KEY=django-insecure-test-key-for-testing-only
     volumes:
       - .:/app
-    command: bash run_tests.sh
+    working_dir: /app/politics_backend
+    command: sh -c "python manage.py migrate --settings=politics_backend.local_settings && gunicorn --bind 0.0.0.0:8000 politics_backend.wsgi:application"
 
 volumes:
   postgres_data:
